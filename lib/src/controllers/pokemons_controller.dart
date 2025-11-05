@@ -18,6 +18,7 @@ class PokemonsController {
 
   final pokemonsLoading = signal(false);
   final pokemonDetailLoading = signal(false);
+  final filteringPokemons = signal(false);
 
   final pokemons = signal<List<PokemonModel>?>(null);
   final pokemonDetail = signal<PokemonDetailModel?>(null);
@@ -160,5 +161,21 @@ class PokemonsController {
 
   String getPokemonFormattedId(String url) {
     return '#${getPokemonId(url).padLeft(3, '0')}';
+  }
+
+  void filterPokemons(String value) {
+    if (value.isEmpty) {
+      _updatePaginatedList();
+      filteringPokemons.set(false);
+      return;
+    }
+
+    filteringPokemons.set(true);
+
+    final filtered = allPokemons.value?.where((pokemon) {
+      return pokemon.name.toLowerCase().contains(value.toLowerCase());
+    }).toList();
+
+    pokemons.set(filtered);
   }
 }
