@@ -132,13 +132,13 @@ class _HomePageState extends State<HomePage> {
                               }
                             : null,
                         icon: const Icon(Icons.arrow_back),
-                        label: const Text('Anterior'),
+                        label: const Text('Previous'),
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         ),
                       ),
                       Text(
-                        'Página $currentPage de $totalPages',
+                        'Page $currentPage of $totalPages',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -152,7 +152,7 @@ class _HomePageState extends State<HomePage> {
                               }
                             : null,
                         icon: const Icon(Icons.arrow_forward),
-                        label: const Text('Próxima'),
+                        label: const Text('Next'),
                         iconAlignment: IconAlignment.end,
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
