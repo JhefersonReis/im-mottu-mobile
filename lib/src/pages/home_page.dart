@@ -19,7 +19,6 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _controller.loadInitialPokemons();
-    _scrollController.addListener(_onScroll);
   }
 
   @override
@@ -28,9 +27,13 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _onScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent * 0.9) {
-      _controller.loadMorePokemons();
+  void _scrollToTop() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
     }
   }
 
@@ -60,31 +63,85 @@ class _HomePageState extends State<HomePage> {
           );
         }
 
-        return ListView.builder(
-          controller: _scrollController,
-          itemCount: pokemons.length + (isLoading ? 1 : 0),
-          padding: const EdgeInsets.all(8),
-          itemBuilder: (context, index) {
-            if (index >= pokemons.length) {
-              return const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: CircularProgressIndicator(),
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                controller: _scrollController,
+                itemCount: pokemons.length,
+                padding: const EdgeInsets.all(8),
+                itemBuilder: (context, index) {
+                  final pokemon = pokemons[index];
+                  final imageUrl = _controller.getPokemonImageUrl(pokemon.url);
+                  final pokemonId = _controller.getPokemonId(pokemon.url);
+
+                  return PokemonCard(
+                    pokemonId: pokemonId,
+                    imageUrl: imageUrl,
+                    pokemon: pokemon,
+                    controller: _controller,
+                  );
+                },
+              ),
+            ),
+            Watch((context) {
+              final currentPage = _controller.currentPage.value;
+              final totalPages = _controller.totalPages.value;
+
+              return Container(
+                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withAlpha(1),
+                      blurRadius: 4,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: currentPage > 1
+                          ? () {
+                              _controller.goToPreviousPage();
+                              _scrollToTop();
+                            }
+                          : null,
+                      icon: const Icon(Icons.arrow_back),
+                      label: const Text('Anterior'),
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                    Text(
+                      'Página $currentPage de $totalPages',
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    ElevatedButton.icon(
+                      onPressed: currentPage < totalPages
+                          ? () {
+                              _controller.goToNextPage();
+                              _scrollToTop();
+                            }
+                          : null,
+                      icon: const Icon(Icons.arrow_forward),
+                      label: const Text('Próxima'),
+                      iconAlignment: IconAlignment.end,
+                      style: ElevatedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      ),
+                    ),
+                  ],
                 ),
               );
-            }
-
-            final pokemon = pokemons[index];
-            final imageUrl = _controller.getPokemonImageUrl(pokemon.url);
-            final pokemonId = _controller.getPokemonId(pokemon.url);
-
-            return PokemonCard(
-              pokemonId: pokemonId,
-              imageUrl: imageUrl,
-              pokemon: pokemon,
-              controller: _controller,
-            );
-          },
+            }),
+          ],
         );
       }),
     );

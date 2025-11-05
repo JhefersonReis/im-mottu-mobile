@@ -1,4 +1,11 @@
+import 'package:isar/isar.dart';
+
+part 'pokemon_model.g.dart';
+
+@collection
 class PokemonModel {
+  Id id = Isar.autoIncrement;
+
   final String name;
   final String url;
 
