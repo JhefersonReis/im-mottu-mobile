@@ -1,4 +1,5 @@
 import 'package:im_mottu_mobile/src/commons/helper.dart';
+import 'package:im_mottu_mobile/src/models/pokemon_detail_model.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_model.dart';
 import 'package:im_mottu_mobile/src/repositories/home/home_repository.dart';
 import 'package:signals/signals_core.dart';
@@ -9,8 +10,11 @@ class PokemonsController {
 
   PokemonsController({required this.homeRepository, required this.helper});
 
-  final loading = signal(false);
+  final pokemonsLoading = signal(false);
+  final pokemonDetailLoading = signal(false);
+
   final pokemons = signal<List<PokemonModel>?>(null);
+  final pokemonDetail = signal<PokemonDetailModel?>(null);
 
   static const int _limit = 20;
   int _offset = 0;
@@ -22,14 +26,14 @@ class PokemonsController {
   }
 
   Future<void> loadMorePokemons() async {
-    if (loading.value) return;
+    if (pokemonsLoading.value) return;
 
     _offset += _limit;
     await _loadPokemons();
   }
 
   Future<void> _loadPokemons() async {
-    loading.set(true);
+    pokemonsLoading.set(true);
 
     final result = await homeRepository.fetchPokemonList(_limit, _offset);
 
@@ -46,7 +50,28 @@ class PokemonsController {
       },
     );
 
-    loading.set(false);
+    pokemonsLoading.set(false);
+  }
+
+  Future<void> loadPokemonDetail(String pokemonName) async {
+    pokemonDetailLoading.set(true);
+
+    // final result = await homeRepository.fetchPokemonDetail(pokemonName);
+    final result = await homeRepository.fetchPokemonDetail('paowdpaw');
+
+    result.fold(
+      (data) {
+        pokemonDetail.set(data);
+      },
+      (error) {
+        helper.showToast(
+          message: error.toString(),
+          status: ToastStatus.error,
+        );
+      },
+    );
+
+    pokemonDetailLoading.set(false);
   }
 
   String getPokemonId(String url) {

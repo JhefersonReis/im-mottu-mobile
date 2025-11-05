@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:im_mottu_mobile/src/constants/routes_constants.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_model.dart';
 
-class PokemonCard extends StatelessWidget {
+class PokemonCard extends StatefulWidget {
   const PokemonCard({
     super.key,
     required this.pokemonId,
@@ -17,14 +19,19 @@ class PokemonCard extends StatelessWidget {
   final PokemonsController _controller;
 
   @override
+  State<PokemonCard> createState() => _PokemonCardState();
+}
+
+class _PokemonCardState extends State<PokemonCard> {
+  @override
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
       child: ListTile(
         leading: Hero(
-          tag: 'pokemon-$pokemonId',
+          tag: 'pokemon-${widget.pokemonId}',
           child: Image.network(
-            imageUrl,
+            widget.imageUrl,
             width: 60,
             height: 60,
             fit: BoxFit.contain,
@@ -49,21 +56,30 @@ class PokemonCard extends StatelessWidget {
           ),
         ),
         title: Text(
-          pokemon.name.toUpperCase(),
+          widget.pokemon.name.toUpperCase(),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 16,
           ),
         ),
         subtitle: Text(
-          _controller.getPokemonFormattedId(pokemon.url),
+          widget._controller.getPokemonFormattedId(widget.pokemon.url),
           style: TextStyle(
             color: Colors.grey[600],
           ),
         ),
         trailing: const Icon(Icons.chevron_right),
-        onTap: () {
-          // TODO: Navigate to pokemon details page
+        onTap: () async {
+          await context.pushNamed(
+            RoutesConstants.pokemonInfo,
+            pathParameters: {
+              'pokemonName': widget.pokemon.name,
+            },
+            queryParameters: {
+              'pokemonId': widget.pokemonId,
+              'imageUrl': widget.imageUrl,
+            },
+          );
         },
       ),
     );

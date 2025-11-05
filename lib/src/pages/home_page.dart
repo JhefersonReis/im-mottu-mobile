@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white,
       body: Watch((context) {
         final pokemons = _controller.pokemons.value;
-        final isLoading = _controller.loading.value;
+        final isLoading = _controller.pokemonsLoading.value;
 
         if (pokemons == null && isLoading) {
           return const Center(
