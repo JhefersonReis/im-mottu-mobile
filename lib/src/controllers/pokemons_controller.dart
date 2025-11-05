@@ -55,15 +55,16 @@ class PokemonsController {
 
   Future<void> loadPokemonDetail(String pokemonName) async {
     pokemonDetailLoading.set(true);
+    pokemonDetail.set(null);
 
-    // final result = await homeRepository.fetchPokemonDetail(pokemonName);
-    final result = await homeRepository.fetchPokemonDetail('paowdpaw');
+    final result = await homeRepository.fetchPokemonDetail(pokemonName);
 
     result.fold(
       (data) {
         pokemonDetail.set(data);
       },
       (error) {
+        pokemonDetail.set(null);
         helper.showToast(
           message: error.toString(),
           status: ToastStatus.error,
