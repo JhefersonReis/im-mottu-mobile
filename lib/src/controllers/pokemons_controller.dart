@@ -130,20 +130,48 @@ class PokemonsController {
     pokemonDetailLoading.set(true);
     pokemonDetail.set(null);
 
-    final result = await homeRepository.fetchPokemonDetail(pokemonName);
+    try {
+      final pokemon = allPokemons.value?.firstWhere(
+        (p) => p.name.toLowerCase() == pokemonName.toLowerCase(),
+      );
 
-    result.fold(
-      (data) {
-        pokemonDetail.set(data);
-      },
-      (error) {
-        pokemonDetail.set(null);
-        helper.showToast(
-          message: error.toString(),
-          status: ToastStatus.error,
-        );
-      },
-    );
+      int? pokemonId;
+      if (pokemon != null && pokemon.url.isNotEmpty) {
+        pokemonId = int.tryParse(getPokemonId(pokemon.url));
+      }
+
+      if (pokemonId != null) {
+        final cachedDetail = await database.getPokemonDetail(pokemonId);
+
+        if (cachedDetail != null) {
+          pokemonDetail.set(cachedDetail);
+          pokemonDetailLoading.set(false);
+          return;
+        }
+      }
+
+      final result = await homeRepository.fetchPokemonDetail(pokemonName);
+
+      result.fold(
+        (data) async {
+          pokemonDetail.set(data);
+          await database.savePokemonDetail(data);
+        },
+        (error) {
+          pokemonDetail.set(null);
+          helper.showToast(
+            message: error.toString(),
+            status: ToastStatus.error,
+          );
+        },
+      );
+    } catch (e) {
+      pokemonDetail.set(null);
+      helper.showToast(
+        message: 'Error loading Pokémon details: $e',
+        status: ToastStatus.error,
+      );
+    }
 
     pokemonDetailLoading.set(false);
   }
