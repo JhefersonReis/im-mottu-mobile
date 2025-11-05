@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
+import 'package:im_mottu_mobile/src/widgets/pokemon_abilities_widget.dart';
+import 'package:im_mottu_mobile/src/widgets/pokemon_type_widget.dart';
 import 'package:signals/signals_flutter.dart';
 
 class PokemonInfoPage extends StatefulWidget {
@@ -104,23 +106,36 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
               else if (pokemonDetail != null)
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: _InfoCard(
-                          icon: Icons.height,
-                          label: 'Altura',
-                          value: '${(pokemonDetail.height ?? 0) / 10} m',
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Expanded(
+                            child: _InfoCard(
+                              icon: Icons.height,
+                              label: 'Height',
+                              value: '${(pokemonDetail.height ?? 0) / 10} m',
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: _InfoCard(
+                              icon: Icons.monitor_weight,
+                              label: 'Weight',
+                              value: '${(pokemonDetail.weight ?? 0) / 10} kg',
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _InfoCard(
-                          icon: Icons.monitor_weight,
-                          label: 'Peso',
-                          value: '${(pokemonDetail.weight ?? 0) / 10} kg',
-                        ),
+                      const SizedBox(height: 24),
+                      PokemonTypeWidget(
+                        pokemonDetail: pokemonDetail,
+                        helper: controller.helper,
+                      ),
+                      const SizedBox(height: 16),
+                      PokemonAbilitiesWidget(
+                        pokemonDetail: pokemonDetail,
                       ),
                     ],
                   ),
@@ -128,7 +143,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
               else
                 const Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: Text('Não foi possível carregar os detalhes do pokémon'),
+                  child: Text('Unable to load pokemon details'),
                 ),
             ],
           ),
