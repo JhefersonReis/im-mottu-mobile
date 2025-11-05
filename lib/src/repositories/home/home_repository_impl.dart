@@ -42,4 +42,22 @@ class HomeRepositoryImpl implements HomeRepository {
       return Failure(Exception('Failed to fetch Pokemon detail'));
     }
   }
+
+  @override
+  AsyncResult<int> fetchPokemonCount() async {
+    final response = await restClient.get(
+      '/pokemon',
+      queryParameters: {
+        'limit': 1,
+        'offset': 0,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final count = response.data['count'] as int;
+      return Success(count);
+    } else {
+      return Failure(Exception('Failed to fetch Pokemon count'));
+    }
+  }
 }

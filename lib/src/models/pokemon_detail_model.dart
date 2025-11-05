@@ -1,3 +1,8 @@
+import 'package:isar/isar.dart';
+
+part 'pokemon_detail_model.g.dart';
+
+@collection
 class PokemonDetailModel {
   final List<Ability> abilities;
   final int? baseExperience;
@@ -5,7 +10,7 @@ class PokemonDetailModel {
   final List<Form> forms;
   final List<GameIndex> gameIndices;
   final int? height;
-  final int? id;
+  final Id id;
   final bool? isDefault;
   final String? locationAreaEncounters;
   final List<Move> moves;
@@ -90,15 +95,16 @@ class PokemonDetailModel {
   }
 }
 
+@embedded
 class Stat {
   int? baseStat;
   int? effort;
-  Species stat;
+  Species? stat;
 
   Stat({
     this.baseStat,
     this.effort,
-    required this.stat,
+    this.stat,
   });
 
   factory Stat.fromJson(Map<String, dynamic> json) {
@@ -113,11 +119,12 @@ class Stat {
     return {
       'base_stat': baseStat,
       'effort': effort,
-      'stat': stat.toJson(),
+      'stat': stat?.toJson(),
     };
   }
 }
 
+@embedded
 class Sprite {
   String? backDefault;
   String? backFemale;
@@ -174,6 +181,7 @@ class Sprite {
   }
 }
 
+@embedded
 class Versions {
   GenerationI? generationI;
   GenerationII? generationII;
@@ -222,6 +230,7 @@ class Versions {
   }
 }
 
+@embedded
 class GenerationI {
   OtherImage? redBlue;
   OtherImage? yellow;
@@ -243,6 +252,7 @@ class GenerationI {
   }
 }
 
+@embedded
 class GenerationII {
   OtherImage? crystal;
   OtherImage? gold;
@@ -267,6 +277,7 @@ class GenerationII {
   }
 }
 
+@embedded
 class GenerationIII {
   OtherImage? emerald;
   OtherImage? fireredLeafgreen;
@@ -291,6 +302,7 @@ class GenerationIII {
   }
 }
 
+@embedded
 class GenerationIV {
   OtherImage? diamondPearl;
   OtherImage? heartgoldSoulsilver;
@@ -317,6 +329,7 @@ class GenerationIV {
   }
 }
 
+@embedded
 class GenerationV {
   BlackWhite? blackWhite;
 
@@ -335,6 +348,7 @@ class GenerationV {
   }
 }
 
+@embedded
 class BlackWhite {
   OtherImage? animated;
   OtherImage? images;
@@ -344,8 +358,7 @@ class BlackWhite {
   factory BlackWhite.fromJson(Map<String, dynamic> json) {
     return BlackWhite(
       animated: json['animated'] != null ? OtherImage.fromJson(json['animated']) : null,
-      // capture the top-level still-image fields in the same object
-      images: OtherImage.fromJson(json),
+      images: json['images'] != null ? OtherImage.fromJson(json['images']) : null,
     );
   }
 
@@ -358,6 +371,7 @@ class BlackWhite {
   }
 }
 
+@embedded
 class GenerationVI {
   OtherImage? omegarubyAlphasapphire;
   OtherImage? xy;
@@ -381,6 +395,7 @@ class GenerationVI {
   }
 }
 
+@embedded
 class GenerationVII {
   OtherImage? icons;
   OtherImage? ultraSunUltraMoon;
@@ -404,6 +419,7 @@ class GenerationVII {
   }
 }
 
+@embedded
 class GenerationVIII {
   OtherImage? icons;
 
@@ -422,6 +438,7 @@ class GenerationVIII {
   }
 }
 
+@embedded
 class Other {
   OtherImage? dreamWorld;
   OtherImage? home;
@@ -454,6 +471,7 @@ class Other {
   }
 }
 
+@embedded
 class OtherImage {
   String? backDefault;
   String? backFemale;
@@ -502,67 +520,61 @@ class OtherImage {
   }
 }
 
+@embedded
 class PastType {
   Species? generation;
-  List<OldType> type;
+  List<OldType>? type;
 
-  PastType({
-    required this.type,
-    this.generation,
-  });
+  PastType({this.type, this.generation});
 
   factory PastType.fromJson(Map<String, dynamic> json) {
     return PastType(
       type: (json['type'] as List).map((e) => OldType.fromJson(e)).toList(),
-      generation: Species.fromJson(json['generation']),
+      generation: json['generation'] != null ? Species.fromJson(json['generation']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'type': type.map((e) => e.toJson()).toList(),
+      'type': type?.map((e) => e.toJson()).toList(),
       'generation': generation?.toJson(),
     };
   }
 }
 
+@embedded
 class OldType {
-  int slot;
-  Species type;
+  int? slot;
+  Species? type;
 
-  OldType({
-    required this.slot,
-    required this.type,
-  });
+  OldType({this.slot, this.type});
 
   factory OldType.fromJson(Map<String, dynamic> json) {
     return OldType(
       slot: json['slot'],
-      type: Species.fromJson(json['type']),
+      type: json['type'] != null ? Species.fromJson(json['type']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'slot': slot,
-      'type': type.toJson(),
+      'type': type?.toJson(),
     };
   }
 }
 
+@embedded
 class PastAbility {
   List<Ability>? abilities;
   Species? generation;
 
-  PastAbility({
-    this.abilities,
-    this.generation,
-  });
+  PastAbility({this.abilities, this.generation});
 
   factory PastAbility.fromJson(Map<String, dynamic> json) {
     return PastAbility(
-      abilities: (json['ability'] as List?)?.map((e) => Ability.fromJson(e)).toList(),
-      generation: Species.fromJson(json['generation']),
+      abilities: (json['abilities'] as List?)?.map((e) => Ability.fromJson(e)).toList(),
+      generation: json['generation'] != null ? Species.fromJson(json['generation']) : null,
     );
   }
 
@@ -574,14 +586,12 @@ class PastAbility {
   }
 }
 
+@embedded
 class Move {
-  Species move;
+  Species? move;
   List<VersionGroupDetail>? versionGroupDetails;
 
-  Move({
-    required this.move,
-    this.versionGroupDetails,
-  });
+  Move({this.move, this.versionGroupDetails});
 
   factory Move.fromJson(Map<String, dynamic> json) {
     return Move(
@@ -594,30 +604,26 @@ class Move {
 
   Map<String, dynamic> toJson() {
     return {
-      'move': move.toJson(),
+      'move': move?.toJson(),
       'version_group_details': versionGroupDetails?.map((e) => e.toJson()).toList(),
     };
   }
 }
 
+@embedded
 class VersionGroupDetail {
-  int levelLearnedAt;
-  Species moveLearnMethod;
+  int? levelLearnedAt;
+  Species? moveLearnMethod;
   int? order;
-  Species versionGroup;
+  Species? versionGroup;
 
-  VersionGroupDetail({
-    required this.levelLearnedAt,
-    required this.moveLearnMethod,
-    required this.versionGroup,
-    this.order,
-  });
+  VersionGroupDetail({this.levelLearnedAt, this.moveLearnMethod, this.versionGroup, this.order});
 
   factory VersionGroupDetail.fromJson(Map<String, dynamic> json) {
     return VersionGroupDetail(
       levelLearnedAt: json['level_learned_at'],
-      moveLearnMethod: Species.fromJson(json['move_learn_method']),
-      versionGroup: Species.fromJson(json['version_group']),
+      moveLearnMethod: json['move_learn_method'] != null ? Species.fromJson(json['move_learn_method']) : null,
+      versionGroup: json['version_group'] != null ? Species.fromJson(json['version_group']) : null,
       order: json['order'],
     );
   }
@@ -625,45 +631,41 @@ class VersionGroupDetail {
   Map<String, dynamic> toJson() {
     return {
       'level_learned_at': levelLearnedAt,
-      'move_learn_method': moveLearnMethod.toJson(),
-      'version_group': versionGroup.toJson(),
+      'move_learn_method': moveLearnMethod?.toJson(),
+      'version_group': versionGroup?.toJson(),
       'order': order,
     };
   }
 }
 
+@embedded
 class GameIndex {
-  int gameIndex;
-  Species version;
+  int? gameIndex;
+  Species? version;
 
-  GameIndex({
-    required this.gameIndex,
-    required this.version,
-  });
+  GameIndex({this.gameIndex, this.version});
 
   factory GameIndex.fromJson(Map<String, dynamic> json) {
     return GameIndex(
       gameIndex: json['game_index'],
-      version: Species.fromJson(json['version']),
+      version: json['version'] != null ? Species.fromJson(json['version']) : null,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'game_index': gameIndex,
-      'version': version.toJson(),
+      'version': version?.toJson(),
     };
   }
 }
 
+@embedded
 class Form {
-  String name;
-  String url;
+  String? name;
+  String? url;
 
-  Form({
-    required this.name,
-    required this.url,
-  });
+  Form({this.name, this.url});
 
   factory Form.fromJson(Map<String, dynamic> json) {
     return Form(
@@ -680,20 +682,17 @@ class Form {
   }
 }
 
+@embedded
 class Ability {
-  Species ability;
-  bool isHidden;
-  int slot;
+  Species? ability;
+  bool? isHidden;
+  int? slot;
 
-  Ability({
-    required this.ability,
-    required this.isHidden,
-    required this.slot,
-  });
+  Ability({this.ability, this.isHidden, this.slot});
 
   factory Ability.fromJson(Map<String, dynamic> json) {
     return Ability(
-      ability: Species.fromJson(json['ability']),
+      ability: json['ability'] != null ? Species.fromJson(json['ability']) : null,
       isHidden: json['is_hidden'],
       slot: json['slot'],
     );
@@ -701,21 +700,19 @@ class Ability {
 
   Map<String, dynamic> toJson() {
     return {
-      'ability': ability.toJson(),
+      'ability': ability?.toJson(),
       'is_hidden': isHidden,
       'slot': slot,
     };
   }
 }
 
+@embedded
 class Species {
-  String name;
-  String url;
+  String? name;
+  String? url;
 
-  Species({
-    required this.name,
-    required this.url,
-  });
+  Species({this.name, this.url});
 
   factory Species.fromJson(Map<String, dynamic> json) {
     return Species(
@@ -732,6 +729,7 @@ class Species {
   }
 }
 
+@embedded
 class Crie {
   String? latest;
   String? legacy;
