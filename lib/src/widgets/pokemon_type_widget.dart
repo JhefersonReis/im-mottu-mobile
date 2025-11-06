@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:im_mottu_mobile/src/commons/helper.dart';
+import 'package:im_mottu_mobile/src/constants/routes_constants.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_detail_model.dart';
 
 class PokemonTypeWidget extends StatelessWidget {
@@ -29,15 +31,28 @@ class PokemonTypeWidget extends StatelessWidget {
               runSpacing: 8,
               children: pokemonDetail.types.map<Widget>((type) {
                 final typeName = type.type?.name ?? 'Unknown';
-                return Chip(
-                  label: Text(
-                    typeName.toUpperCase(),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                return InkWell(
+                  onTap: () async {
+                    await context.pushNamed(
+                      RoutesConstants.pokemonFilteredList,
+                      pathParameters: {
+                        'by': 'type',
+                      },
+                      queryParameters: {
+                        'type': typeName,
+                      },
+                    );
+                  },
+                  child: Chip(
+                    label: Text(
+                      typeName.toUpperCase(),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
+                    backgroundColor: helper.getTypeColor(typeName),
                   ),
-                  backgroundColor: helper.getTypeColor(typeName),
                 );
               }).toList(),
             ),

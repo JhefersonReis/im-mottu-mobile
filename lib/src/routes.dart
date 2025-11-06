@@ -2,6 +2,7 @@ import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:im_mottu_mobile/src/constants/routes_constants.dart';
 import 'package:im_mottu_mobile/src/pages/pokemon_detail_page.dart';
+import 'package:im_mottu_mobile/src/pages/pokemon_filtered_list_page.dart';
 import 'package:im_mottu_mobile/src/pages/splash_page.dart';
 
 import 'pages/home_page.dart';
@@ -49,6 +50,19 @@ final GoRouter router = GoRouter(
           pokemonName: pokemonName!,
           pokemonId: pokemonId!,
           imageUrl: imageUrl!,
+        );
+      },
+    ),
+    GoRoute(
+      path: RoutesConstants.pokemonFilteredList,
+      name: RoutesConstants.pokemonFilteredList,
+      builder: (context, state) {
+        final by = state.pathParameters['by'];
+        final type = state.uri.queryParameters['type'];
+
+        return PokemonFilteredListPage(
+          filterBy: by!,
+          type: type!,
         );
       },
     ),

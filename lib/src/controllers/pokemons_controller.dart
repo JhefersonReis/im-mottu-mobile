@@ -2,11 +2,11 @@ import 'package:im_mottu_mobile/src/commons/helper.dart';
 import 'package:im_mottu_mobile/src/database/database.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_detail_model.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_model.dart';
-import 'package:im_mottu_mobile/src/repositories/home/home_repository.dart';
+import 'package:im_mottu_mobile/src/repositories/pokemon/pokemon_repository.dart';
 import 'package:signals/signals_core.dart';
 
 class PokemonsController {
-  final HomeRepository homeRepository;
+  final PokemonRepository homeRepository;
   final Helper helper;
   final Database database;
 
@@ -19,10 +19,12 @@ class PokemonsController {
   final pokemonsLoading = signal(false);
   final pokemonDetailLoading = signal(false);
   final filteringPokemons = signal(false);
+  final filteredPokemonsLoading = signal(false);
 
   final pokemons = signal<List<PokemonModel>?>(null);
   final pokemonDetail = signal<PokemonDetailModel?>(null);
   final allPokemons = signal<List<PokemonModel>?>(null);
+  final filteredPokemons = signal<List<PokemonModel>?>(null);
   final currentPage = signal(1);
   final totalPages = signal(1);
 
@@ -205,5 +207,49 @@ class PokemonsController {
     }).toList();
 
     pokemons.set(filtered);
+  }
+
+  Future<void> loadPokemonsByAbility(String abilityName) async {
+    filteredPokemonsLoading.set(true);
+    filteredPokemons.set(null);
+
+    final result = await homeRepository.fetchPokemonByAbility(abilityName);
+
+    result.fold(
+      (data) {
+        filteredPokemons.set(data);
+      },
+      (error) {
+        filteredPokemons.set(null);
+        helper.showToast(
+          message: error.toString(),
+          status: ToastStatus.error,
+        );
+      },
+    );
+
+    filteredPokemonsLoading.set(false);
+  }
+
+  Future<void> loadPokemonsByType(String typeName) async {
+    filteredPokemonsLoading.set(true);
+    filteredPokemons.set(null);
+
+    final result = await homeRepository.fetchPokemonByType(typeName);
+
+    result.fold(
+      (data) {
+        filteredPokemons.set(data);
+      },
+      (error) {
+        filteredPokemons.set(null);
+        helper.showToast(
+          message: error.toString(),
+          status: ToastStatus.error,
+        );
+      },
+    );
+
+    filteredPokemonsLoading.set(false);
   }
 }
