@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
+import 'package:im_mottu_mobile/src/widgets/custom_progress_indicator.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_abilities_widget.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_type_widget.dart';
 import 'package:signals/signals_flutter.dart';
@@ -101,7 +102,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
               if (isLoading)
                 const Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
+                  child: CustomProgressIndicator(),
                 )
               else if (pokemonDetail != null)
                 Padding(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
+import 'package:im_mottu_mobile/src/widgets/custom_progress_indicator.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_card.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -54,7 +55,7 @@ class _HomePageState extends State<HomePage> {
 
         if (pokemons == null && isLoading) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CustomProgressIndicator(),
           );
         }
 
@@ -81,28 +82,28 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             Expanded(
-              child: ListView.builder(
-                controller: _scrollController,
-                itemCount: pokemons?.length ?? 0,
-                padding: const EdgeInsets.all(8),
-                itemBuilder: (context, index) {
-                  final pokemon = pokemons?[index];
+              child: pokemons != null
+                  ? ListView.builder(
+                      controller: _scrollController,
+                      itemCount: pokemons.length,
+                      padding: const EdgeInsets.all(8),
+                      itemBuilder: (context, index) {
+                        final pokemon = pokemons[index];
 
-                  if (pokemon == null) {
-                    return const SizedBox.shrink();
-                  }
+                        final imageUrl = _controller.getPokemonImageUrl(pokemon.url);
+                        final pokemonId = _controller.getPokemonId(pokemon.url);
 
-                  final imageUrl = _controller.getPokemonImageUrl(pokemon.url);
-                  final pokemonId = _controller.getPokemonId(pokemon.url);
-
-                  return PokemonCard(
-                    pokemonId: pokemonId,
-                    imageUrl: imageUrl,
-                    pokemon: pokemon,
-                    controller: _controller,
-                  );
-                },
-              ),
+                        return PokemonCard(
+                          pokemonId: pokemonId,
+                          imageUrl: imageUrl,
+                          pokemon: pokemon,
+                          controller: _controller,
+                        );
+                      },
+                    )
+                  : const Center(
+                      child: Text('No Pokémons found.'),
+                    ),
             ),
             if (_controller.filteringPokemons.value == false)
               Watch((context) {

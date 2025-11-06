@@ -16,6 +16,7 @@ void setupDependencies() {
   _getIt.registerLazySingleton<PokemonRepository>(
     () => PokemonRepositoryImpl(
       restClient: _getIt<RestClient>(),
+      helper: _getIt<Helper>(),
     ),
   );
   _getIt.registerLazySingleton<PokemonsController>(

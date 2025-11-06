@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
+import 'package:im_mottu_mobile/src/widgets/custom_progress_indicator.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_card.dart';
 import 'package:signals/signals_flutter.dart';
 
@@ -52,7 +53,7 @@ class _PokemonFilteredListPageState extends State<PokemonFilteredListPage> {
 
         if (isLoading) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CustomProgressIndicator(),
           );
         }
 
