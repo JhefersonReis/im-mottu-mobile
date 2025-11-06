@@ -1,19 +1,17 @@
 import 'package:im_mottu_mobile/src/commons/helper.dart';
-import 'package:im_mottu_mobile/src/database/database.dart';
+import 'package:im_mottu_mobile/src/constants/constants.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_detail_model.dart';
 import 'package:im_mottu_mobile/src/models/pokemon_model.dart';
-import 'package:im_mottu_mobile/src/repositories/pokemon/pokemon_repository.dart';
+import 'package:im_mottu_mobile/src/services/pokemon/pokemon_service.dart';
 import 'package:signals/signals_core.dart';
 
 class PokemonsController {
-  final PokemonRepository homeRepository;
+  final PokemonService pokemonService;
   final Helper helper;
-  final Database database;
 
   PokemonsController({
-    required this.homeRepository,
+    required this.pokemonService,
     required this.helper,
-    required this.database,
   });
 
   final pokemonsLoading = signal(false);
@@ -28,8 +26,7 @@ class PokemonsController {
   final currentPage = signal(1);
   final totalPages = signal(1);
 
-  static const int _itemsPerPage = 20;
-  static const int _maxPokemonLimit = 2000;
+  static const int _itemsPerPage = ValuesConstants.itemsPerPage;
 
   Future<void> loadInitialPokemons() async {
     pokemonsLoading.set(true);
@@ -37,38 +34,20 @@ class PokemonsController {
     pokemons.set(null);
     allPokemons.set(null);
 
-    try {
-      // Verify count from API
-      final countResult = await homeRepository.fetchPokemonCount();
+    final result = await pokemonService.loadInitialPokemons();
 
-      await countResult.fold(
-        (apiCount) async {
-          // Verify local count
-          final localCount = await database.countPokemons();
-
-          if (apiCount == localCount && localCount > 0) {
-            // Use cached data
-            final cachedPokemons = await database.getAllPokemons();
-            allPokemons.set(cachedPokemons);
-            _updatePaginatedList();
-          } else {
-            // Fetch all pokémons from API and save to cache
-            await _fetchAndCacheAllPokemons();
-          }
-        },
-        (error) {
-          helper.showToast(
-            message: error.toString(),
-            status: ToastStatus.error,
-          );
-        },
-      );
-    } catch (e) {
-      helper.showToast(
-        message: 'Error loading pokémons: $e',
-        status: ToastStatus.error,
-      );
-    }
+    result.fold(
+      (data) {
+        allPokemons.set(data);
+        _updatePaginatedList();
+      },
+      (error) {
+        helper.showToast(
+          message: error.toString(),
+          status: ToastStatus.error,
+        );
+      },
+    );
 
     pokemonsLoading.set(false);
   }
@@ -110,70 +89,27 @@ class PokemonsController {
     }
   }
 
-  Future<void> _fetchAndCacheAllPokemons() async {
-    final result = await homeRepository.fetchPokemonList(_maxPokemonLimit, 0);
+  Future<void> loadPokemonDetail(String pokemonName, String pokemonUrl) async {
+    pokemonDetailLoading.set(true);
+    pokemonDetail.set(null);
 
-    await result.fold(
-      (data) async {
-        await database.saveAllPokemons(data);
-        allPokemons.set(data);
-        _updatePaginatedList();
+    final result = await pokemonService.loadPokemonDetail(
+      pokemonName,
+      pokemonUrl,
+    );
+
+    result.fold(
+      (data) {
+        pokemonDetail.set(data);
       },
       (error) {
+        pokemonDetail.set(null);
         helper.showToast(
           message: error.toString(),
           status: ToastStatus.error,
         );
       },
     );
-  }
-
-  Future<void> loadPokemonDetail(String pokemonName) async {
-    pokemonDetailLoading.set(true);
-    pokemonDetail.set(null);
-
-    try {
-      final pokemon = allPokemons.value?.firstWhere(
-        (p) => p.name.toLowerCase() == pokemonName.toLowerCase(),
-      );
-
-      int? pokemonId;
-      if (pokemon != null && pokemon.url.isNotEmpty) {
-        pokemonId = int.tryParse(getPokemonId(pokemon.url));
-      }
-
-      if (pokemonId != null) {
-        final cachedDetail = await database.getPokemonDetail(pokemonId);
-
-        if (cachedDetail != null) {
-          pokemonDetail.set(cachedDetail);
-          pokemonDetailLoading.set(false);
-          return;
-        }
-      }
-
-      final result = await homeRepository.fetchPokemonDetail(pokemonName);
-
-      result.fold(
-        (data) async {
-          pokemonDetail.set(data);
-          await database.savePokemonDetail(data);
-        },
-        (error) {
-          pokemonDetail.set(null);
-          helper.showToast(
-            message: error.toString(),
-            status: ToastStatus.error,
-          );
-        },
-      );
-    } catch (e) {
-      pokemonDetail.set(null);
-      helper.showToast(
-        message: 'Error loading Pokémon details: $e',
-        status: ToastStatus.error,
-      );
-    }
 
     pokemonDetailLoading.set(false);
   }
@@ -202,10 +138,8 @@ class PokemonsController {
 
     filteringPokemons.set(true);
 
-    final filtered = allPokemons.value?.where((pokemon) {
-      return pokemon.name.toLowerCase().contains(value.toLowerCase());
-    }).toList();
-
+    final all = allPokemons.value ?? [];
+    final filtered = pokemonService.filterPokemonsByName(value, all);
     pokemons.set(filtered);
   }
 
@@ -213,7 +147,7 @@ class PokemonsController {
     filteredPokemonsLoading.set(true);
     filteredPokemons.set(null);
 
-    final result = await homeRepository.fetchPokemonByAbility(abilityName);
+    final result = await pokemonService.fetchPokemonByAbility(abilityName);
 
     result.fold(
       (data) {
@@ -235,7 +169,7 @@ class PokemonsController {
     filteredPokemonsLoading.set(true);
     filteredPokemons.set(null);
 
-    final result = await homeRepository.fetchPokemonByType(typeName);
+    final result = await pokemonService.fetchPokemonByType(typeName);
 
     result.fold(
       (data) {

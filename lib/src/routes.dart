@@ -45,11 +45,13 @@ final GoRouter router = GoRouter(
         final pokemonName = state.pathParameters['pokemonName'];
         final pokemonId = state.uri.queryParameters['pokemonId'];
         final imageUrl = state.uri.queryParameters['imageUrl'];
+        final pokemonUrl = state.uri.queryParameters['pokemonUrl'];
 
         return PokemonInfoPage(
           pokemonName: pokemonName!,
           pokemonId: pokemonId!,
           imageUrl: imageUrl!,
+          pokemonUrl: pokemonUrl,
         );
       },
     ),

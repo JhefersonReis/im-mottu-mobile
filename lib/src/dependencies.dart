@@ -5,6 +5,8 @@ import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
 import 'package:im_mottu_mobile/src/database/database.dart';
 import 'package:im_mottu_mobile/src/repositories/pokemon/pokemon_repository.dart';
 import 'package:im_mottu_mobile/src/repositories/pokemon/pokemon_repository_impl.dart';
+import 'package:im_mottu_mobile/src/services/pokemon/pokemon_service.dart';
+import 'package:im_mottu_mobile/src/services/pokemon/pokemon_service_impl.dart';
 
 final _getIt = GetIt.instance;
 
@@ -19,11 +21,18 @@ void setupDependencies() {
       helper: _getIt<Helper>(),
     ),
   );
+
+  _getIt.registerLazySingleton<PokemonService>(
+    () => PokemonServiceImpl(
+      repository: _getIt<PokemonRepository>(),
+      database: _getIt<Database>(),
+    ),
+  );
+
   _getIt.registerLazySingleton<PokemonsController>(
     () => PokemonsController(
-      homeRepository: _getIt<PokemonRepository>(),
+      pokemonService: _getIt<PokemonService>(),
       helper: _getIt<Helper>(),
-      database: _getIt<Database>(),
     ),
   );
 }

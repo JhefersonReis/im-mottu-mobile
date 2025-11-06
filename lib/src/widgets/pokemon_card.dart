@@ -78,6 +78,7 @@ class _PokemonCardState extends State<PokemonCard> {
             queryParameters: {
               'pokemonId': widget.pokemonId,
               'imageUrl': widget.imageUrl,
+              'pokemonUrl': widget.pokemon.url,
             },
           );
         },
