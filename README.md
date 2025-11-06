@@ -1,95 +1,199 @@
-# 🧪 I'm Mottu Mobile — Teste prático Flutter com PokeAPI
+# ![Pokébola](https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png) Pokédex App
 
-Este teste está dividido em três níveis de dificuldade. Você pode desenvolver seu App atendendo apenas a um nível ou a todos, conforme desejar demonstrar suas habilidades.
+![Flutter](https://img.shields.io/badge/Flutter-3.0%2B-02569B?logo=flutter&logoColor=white)
+![Dart](https://img.shields.io/badge/Dart-3.0%2B-0175C2?logo=dart&logoColor=white)
+![License](https://img.shields.io/badge/license-MIT-green)
 
----
-
-## ✅ Etapas Iniciais (obrigatórias para qualquer nível)
-
-1. Faça um **fork deste repositório** para o seu GitHub como privado.
-2. Adicione os usuários abaixo como colaboradores:
-   - `@brunosmm`
-   - `@BetoMottu`
-3. Crie um novo projeto Flutter com o package:
-4. Utilize a [PokeAPI](https://pokeapi.co/) como fonte de dados.
-5. Crie um arquivo `README.md` com:
-- Quais funcionalidades foram implementadas
-- Como rodar o projeto
-- Arquitetura utilizada (se houver)
-6. O app deve buildar também para a plataforma **iOS**.
+A modern and complete Pokédex Flutter application. The app consumes data from [PokeAPI](https://pokeapi.co/) and implements advanced features such as caching, pagination, and filters.
 
 ---
 
-## 📚 Referência da API
+## ✨ Implemented Features
 
-A API utilizada neste teste é a [PokeAPI](https://pokeapi.co/). Abaixo, alguns endpoints úteis:
+### ✅ Level 1
+- [x] Pokémon listing with image and name
+- [x] Details screen displaying:
+  - High-resolution image
+  - Name
+  - Height
+  - Weight
 
-| Recurso              | Endpoint base                                 | Exemplo                                      |
-|----------------------|-----------------------------------------------|----------------------------------------------|
-| Lista de pokémons    | `/api/v2/pokemon`                             | https://pokeapi.co/api/v2/pokemon            |
-| Detalhes do pokémon  | `/api/v2/pokemon/{name}`                      | https://pokeapi.co/api/v2/pokemon/pikachu    |
-| Tipos                | `/api/v2/type`                                | https://pokeapi.co/api/v2/type/electric      |
-| Habilidades          | `/api/v2/ability`                             | https://pokeapi.co/api/v2/ability/1          |
+### ✅ Level 2
+- [x] **Intelligent Cache System**
+  - Local cache with Isar Database
+  - Automatic API synchronization
+  - Update verification by count
+- [x] **Search filter by name** in listing
+- [x] Extended details with:
+  - **Types** (with themed colors)
+  - **Abilities** (normal and hidden)
 
-> A documentação completa está disponível em:  
-> 🔗 https://pokeapi.co/docs/v2
+### ✅ Level 3
+- [x] **Custom Splash Screen**
+- [x] **Automatic cache cleanup** when closing the app
+  - List cache maintained
+  - Detail cache automatically cleared
+- [x] **Pagination** implemented
+  - 20 pokémons per page
+  - Navigation with Previous/Next buttons
+  - Auto-scroll when changing pages
+- [x] **Advanced filters**
+  - Listing by type
+  - Listing by ability
+  - Navigation between related pokémons
 
----
-
-## 🔸 Nível 1 — `level_1`
-
-- Realizar todas as **etapas iniciais**
-- Mostrar uma **listagem de Pokémons** com:
-- Imagem
-- Nome
-- Ao clicar em um card da listagem, exibir a tela de **detalhes** com:
-- Imagem
-- Nome
-- Altura
-- Peso
-
----
-
-## 🔸 Nível 2 — `level_2`
-
-- Tudo do **Nível 1**
-- Armazenar localmente em **cache** as consultas feitas à API
-- Criar um **filtro por nome** para a listagem
-- Na tela de detalhes, exibir também:
-- **Tipos**
-- **Habilidades**
-
----
-
-## 🔸 Nível 3 — `level_3`
-
-- Tudo do **Nível 2**
-- Criar uma **Splash screen customizada**
-- Limpar o **cache** ao fechar o app
-- Implementar **paginação** na listagem
-- Ao clicar em um tipo ou habilidade, exibir a lista de pokémons relacionados
-- Permitir navegação para os detalhes de pokémons relacionados
-- Criar **testes de unidade** para as regras de negócio
+### 🌟 Extra Points
+- [x] **MVVM Architecture with Services**
+  - Clear separation of responsibilities
+  - Service Layer for business logic
+  - Controllers focused on state management
+- [x] **Firebase Crashlytics** configured
 
 ---
 
-## 💎 Pontos Extras (opcional)
+## 🏗️ Architecture
 
-- Utilizar **GetX**
-- Configurar **Firebase Crashlytics**
-- Criar **channel nativo (Kotlin)** para detectar mudanças de conexão e exibir mensagem de status offline no app
-- Utilizar uma arquitetura (MVC, MVVM, MVP, MVU)
+The project follows an **MVVM (Model-View-ViewModel) architecture with Service Layer**, ensuring separation of concerns and testable code:
+
+```
+lib/
+├── src/
+│   ├── commons/          # Shared helpers and utilities
+│   ├── constants/        # Application constants
+│   ├── controllers/      # ViewModels (manage UI state)
+│   ├── database/         # Persistence layer (Isar)
+│   ├── models/           # Data models
+│   ├── pages/            # Application screens
+│   ├── repositories/     # API communication
+│   ├── services/         # Business logic and cache
+│   ├── widgets/          # Reusable components
+│   ├── dependencies.dart # Dependency injection
+│   └── routes.dart       # Route configuration
+└── main.dart
+```
+
+### Data Flow
+
+```
+┌─────────────────────────────────┐
+│    UI (Pages/Widgets)           │
+│  - HomePage                     │
+│  - PokemonDetailPage            │
+└─────────────────┬───────────────┘
+                  ↓
+┌─────────────────────────────────┐
+│    Controllers (ViewModel)      │
+│  - Manages States (Signals)     │
+│  - Orchestrates Services        │
+│  - UI/Pagination Logic          │
+└─────────────────┬───────────────┘
+                  ↓
+┌─────────────────────────────────┐
+│      Service Layer              │
+│  - Business Logic               │
+│  - Cache Management             │
+│  - API/Local Synchronization    │
+└─────────┬───────────────┬───────┘
+          ↓               ↓
+┌──────────────┐  ┌──────────────┐
+│ Repository   │  │  Database    │
+│  (API)       │  │  (Isar)      │
+└──────────────┘  └──────────────┘
+```
 
 ---
 
-## 💡 Boas práticas
+## 🚀 How to Run the Project
 
-- Faça commits frequentes e descritivos
-- Trabalhe com **branches separadas por nível** (ex: `level_1`, `level_2`, etc)
-- Use Pull Requests (PRs) ao evoluir entre níveis
-- Seja criativo(a), mas evite cópias ou uso de IA — nós vamos perceber 😎
+### Prerequisites
+
+- Flutter SDK 3.0+
+- Dart SDK 3.0+
+- Android Studio / Xcode
+- Firebase Account (for Crashlytics)
+
+### Installation
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/JhefersonReis/im-mottu-mobile.git
+cd im-mottu-mobile
+```
+
+2. **Install dependencies**
+```bash
+flutter pub get
+```
+
+3. **Configure Firebase**
+   - Add your `google-services.json` (Android) to `android/app/`
+   - Add your `GoogleService-Info.plist` (iOS) to `ios/Runner/`
+
+4. **Generate required files**
+
+   You can either run a one-time build or use watch mode to recompile automatically on changes to files observed by the build runner:
+
+   - One-time build:
+   ```bash
+   flutter pub run build_runner build --delete-conflicting-outputs
+   ```
+
+   - Watch (recompiles automatically when watched files change):
+   ```bash
+   flutter pub run build_runner watch --delete-conflicting-outputs
+   ```
+
+   Note: the --delete-conflicting-outputs flag is recommended to avoid conflicts with generated files.
+
+5. **⚠️ IMPORTANT Configuration for Android**
+   
+   Due to a known issue in the `isar_flutter_libs` package (v3.1.0+1), you need to manually add the namespace:
+   
+   - Navigate to: `C:\Users\{YOUR_USERNAME}\AppData\Local\Pub\Cache\hosted\pub.dev\isar_flutter_libs-3.1.0\android\build.gradle`
+   - Add the following line inside the `android` block:
+   ```gradle
+   android {
+       namespace 'dev.isar.isar_flutter_libs'
+       // ... rest of configuration
+   }
+   ```
+   
+   **Reference:** [Stack Overflow - Flutter Isar Database namespace issue](https://stackoverflow.com/questions/79031081/flutter-isar-database-v3-1-01-namespace-not-defined)
+
+6. **Run the app**
+```bash
+# Android
+flutter run
+
+# iOS
+flutter run -d ios
+```
 
 ---
 
-Boa sorte e divirta-se!  
-🚀 Equipe Mottu
+## 📦 Main Packages Used
+
+| Package | Version | Description |
+|--------|--------|-----------|
+| `dio` | ^5.7.0 | HTTP client for requests |
+| `isar` | ^3.1.0+1 | Local NoSQL database |
+| `signals` | ^5.5.0 | Reactive state management |
+| `get_it` | ^8.0.2 | Dependency injection |
+| `go_router` | ^14.6.2 | Declarative navigation |
+| `result_dart` | ^1.1.0 | Functional error handling |
+| `firebase_crashlytics` | ^4.1.3 | Error monitoring |
+| `toastification` | ^2.3.0 | User notifications |
+
+---
+
+## 🐛 Crashlytics
+
+The app is configured with Firebase Crashlytics for production error monitoring:
+
+- Automatic exception capture
+- Detailed stack traces
+- Custom logs for debugging
+- Integration with Firebase Console
+
+---
+
