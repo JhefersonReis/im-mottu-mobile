@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:im_mottu_mobile/src/controllers/pokemons_controller.dart';
+import 'package:im_mottu_mobile/src/widgets/custom_progress_indicator.dart';
+import 'package:im_mottu_mobile/src/widgets/info_card.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_abilities_widget.dart';
 import 'package:im_mottu_mobile/src/widgets/pokemon_type_widget.dart';
 import 'package:signals/signals_flutter.dart';
@@ -9,12 +11,14 @@ class PokemonInfoPage extends StatefulWidget {
   final String pokemonName;
   final String pokemonId;
   final String imageUrl;
+  final String? pokemonUrl;
 
   const PokemonInfoPage({
     super.key,
     required this.pokemonName,
     required this.pokemonId,
     required this.imageUrl,
+    this.pokemonUrl,
   });
 
   @override
@@ -27,7 +31,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
   @override
   void initState() {
     super.initState();
-    controller.loadPokemonDetail(widget.pokemonName);
+    controller.loadPokemonDetail(widget.pokemonName, widget.pokemonUrl ?? '');
   }
 
   @override
@@ -101,7 +105,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
               if (isLoading)
                 const Padding(
                   padding: EdgeInsets.all(32.0),
-                  child: CircularProgressIndicator(),
+                  child: CustomProgressIndicator(),
                 )
               else if (pokemonDetail != null)
                 Padding(
@@ -112,7 +116,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           Expanded(
-                            child: _InfoCard(
+                            child: InfoCard(
                               icon: Icons.height,
                               label: 'Height',
                               value: '${(pokemonDetail.height ?? 0) / 10} m',
@@ -120,7 +124,7 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: _InfoCard(
+                            child: InfoCard(
                               icon: Icons.monitor_weight,
                               label: 'Weight',
                               value: '${(pokemonDetail.weight ?? 0) / 10} kg',
@@ -149,54 +153,6 @@ class _PokemonInfoPageState extends State<PokemonInfoPage> {
           ),
         );
       }),
-    );
-  }
-}
-
-class _InfoCard extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _InfoCard({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      elevation: 2,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              size: 32,
-              color: Colors.blue[700],
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              value,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

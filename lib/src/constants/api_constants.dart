@@ -1,6 +1,6 @@
 sealed class ApiConstants {
   static const fetchPokemonList = '/pokemon';
   static String fetchPokemonDetails(String pokemonName) => '/pokemon/$pokemonName';
-  static const fetchPokemonTypes = '/type';
-  static String fetchPokemonAbilityDetails(String id) => '/ability/$id';
+  static String fetchPokemonByTypes(String typeName) => '/type/$typeName';
+  static String fetchPokemonByAbilities(String abilityId) => '/ability/$abilityId';
 }

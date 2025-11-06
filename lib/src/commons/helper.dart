@@ -1,5 +1,5 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:toastification/toastification.dart';
 
 enum ToastStatus { success, error, warning, info }
@@ -85,6 +85,34 @@ class Helper {
         return Colors.pink[200]!;
       default:
         return Colors.grey;
+    }
+  }
+
+  String getDioErrorMessage(DioException e) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return 'Connection timeout. Please check your internet connection.';
+      case DioExceptionType.connectionError:
+        return 'No internet connection. Please check your network settings.';
+      case DioExceptionType.badResponse:
+        final statusCode = e.response?.statusCode;
+        if (statusCode == 404) {
+          return 'Pokemon not found.';
+        } else if (statusCode == 500) {
+          return 'Server error. Please try again later.';
+        }
+        return 'Failed to load data. Status code: $statusCode';
+      case DioExceptionType.cancel:
+        return 'Request was cancelled.';
+      case DioExceptionType.badCertificate:
+        return 'Certificate verification failed.';
+      case DioExceptionType.unknown:
+        if (e.error.toString().contains('SocketException')) {
+          return 'No internet connection. Please check your network settings.';
+        }
+        return 'An unexpected error occurred. Please try again.';
     }
   }
 }

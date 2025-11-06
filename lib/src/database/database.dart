@@ -50,4 +50,10 @@ class Database {
     final detail = await isar.pokemonDetailModels.get(pokemonId);
     return detail != null;
   }
+
+  Future<void> clearPokemonDetails() async {
+    await isar.writeTxn(() async {
+      await isar.pokemonDetailModels.clear();
+    });
+  }
 }

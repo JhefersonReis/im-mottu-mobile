@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "875496895423",
+    "project_id": "pokemon-app-1309c",
+    "storage_bucket": "pokemon-app-1309c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:875496895423:android:dd6861cee712a192af270a",
+        "android_client_info": {
+          "package_name": "com.example.im_mottu_mobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBjr9EJUlHC_uVIUiN2M9AAVJK-Tdyh8BM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
